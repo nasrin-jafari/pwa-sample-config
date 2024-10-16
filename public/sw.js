@@ -85,6 +85,8 @@ this.addEventListener("fetch", event => {
                 if (resp) {
                     return resp; // برگرداندن پاسخ از کش (بدون نیاز به درخواست از سرور)
                 }
+                let requestUrl  = event.request.clone();
+                fetch(requestUrl)
             })
         )
     }

@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import {Table} from "react-bootstrap";
+import {Alert, Table} from "react-bootstrap";
+import {json} from "react-router-dom";
 
 function Users() {
     const [users, setUsers] = useState([]);
+    const [mode, setMode] = useState("online");
     const [error, setError] = useState(null);
 
     useEffect(() => {
@@ -10,25 +12,36 @@ function Users() {
 
         fetch(url)
             .then((res) => {
-                if (!res.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return res.json();
-            })
-            .then((data) => {
-                console.warn(data);
-                setUsers(data);
-            })
-            .catch((err) => {
-                console.error('Fetch error:', err);
+                res.json().then(users => {
+                    console.warn(users);
+                    setUsers(users);
+                    localStorage.setItem("users", JSON.stringify(users));
+                })
+            }).catch((err) => {
+                // console.error('Fetch error:', err);
+                // alert("in catch block")
+            setMode("offline");
                 setError('Failed to fetch users');
+                let collection  = localStorage.getItem("users");
+                setUsers(JSON.parse(collection))
             });
     }, []);
 
     return (
         <div>
+            <div>
+                {
+                    mode === "offline" ? (
+                        <Alert key={"warning"} variant={"warning"}>
+                            you are in offline mode or some issue with connection
+                        </Alert>
+
+                    ) : null
+                }
+            </div>
+
             <Table striped bordered hover>
-                <thead>
+            <thead>
                 <tr>
                     <th>ID</th>
                     <th> Name</th>
